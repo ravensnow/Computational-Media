@@ -1,0 +1,124 @@
+"""All this text taken/adapted from http://fbkarsdorp.github.io/python-course/ Chapters 2 and 3 to be used as a reference later."""
+
+print(infile.read())
+infile = open('data/austen-emma-excerpt.txt')
+text = infile.read()
+infile.close()
+
+"""We will go through the previous quiz step by step. We would like to know how often the preposition in occurs in our text. As a first step we will split the string text into a list of words:"""
+words = text.split()
+"""Next we define a variable number_of_hits and set it to zero."""
+number_of_hits = 0
+"""The final step is to loop over all words in words and add 1 to number_of_ins if we find a word that is equal to in:"""
+item_to_count = "in"
+for word in words:
+    if word == item_to_count:
+        number_of_hits += 1
+print(number_of_hits)
+
+"""roundabout count"""
+def count_in_list(item_to_count, list_to_search): 
+    number_of_hits = 0                            
+    for item in list_to_search:                   
+        if item == item_to_count:                 
+            number_of_hits += 1                   
+    return number_of_hits                         
+    
+"""consolidated"""
+infile = open('data/austen-emma-excerpt.txt')
+text = infile.read()
+infile.close()
+words = text.split()
+
+for word in words:
+    print(word, count_in_list(word, words))
+    
+"""remove punctuation function"""
+def remove_punc2(text):
+    punctuation = '!@#$%^&*()_-+={}[]:;"\'|<>,.?/~`'
+    clean_text = ""
+    for character in text:
+        if character not in punctuation:
+            clean_text += character
+    return clean_text
+
+short_text = "Commas, as it turns out, are overestimated. Dots, however, even more so!"
+print(remove_punc2(short_text))
+
+"""reading text"""
+def read_file(filename):
+    "Read the contents of FILENAME and return as a string."
+    infile = open(filename) # windows users should use codecs.open after importing codecs
+    contents = infile.read()
+    infile.close()
+    return contents
+"""Now, instead of having to open a file, read the contents and close the file, we can just call the function read_file to do all that:"""
+
+text = read_file("data/austen-emma-excerpt.txt")
+print(text)
+
+"""We want to iterate over all these files. You can do this using the listdir function from the os module. We import this function as follows:"""
+from os import listdir
+
+"""After that, the listdir function is available to use. This function takes as argument the path to a directory and returns all the files and subdirectories present in that directory:"""
+listdir("data")
+
+"""need to write a end of sentence function"""
+def split_sentences(text):
+    "Split a text string into a list of sentences."
+    sentences = []
+    start = 0
+    for end, character in enumerate(text):
+        if end_of_sentence_marker(character):
+            sentence = text[start: end + 1]
+            sentences.append(sentence)
+            start = end + 1
+    return sentences
+    
+"""some sort of final step"""
+"""The final step is to tokenize each sentence into a list of words. The file preprocessing.py contains a function called clean_text which removes all punctuation from a text and turns all characters to lowercase. We import that function using the following line:"""
+
+from pyhum.preprocessing import clean_text
+def tokenize(text):
+    """Transform TEXT into a list of sentences. Lowercase each sentence and remove all punctuation. Finally split each sentence into a list of words."""
+    # insert your code here
+
+# these tests should return True if your code is correct
+print(tokenize("This is a sentence. So, what!") == 
+      [["this", "is", "a", "sentence"], ["so", "what"]])
+      
+
+corpus = []
+filenames = list_textfiles("data/arabian_nights")
+filenames.sort(key=get_night)
+for filename in filenames:
+    text = read_file(filename)
+    corpus.append(tokenize(text))
+    
+"""Exploratory data analysis"""
+""" It is quite easy to count the number of sentences per night, since each night is represented by a list of sentences."""
+
+sentences_per_night = []
+for night in corpus:
+    sentences_per_night.append(len(night))
+print(sentences_per_night[:10])
+
+"""This is key"""
+"""3) In this final exercise we will put everything together what we have learnt so far. We want you to write a function positions_of that returns for a given word all sentence positions in the Arabian Nights where that word occurs. We are not interested in the positions relative to a particular night, but only to the corpus as a whole. Use that function to find all occurences of the name Sharahzad and store the corresponding indexes in the variable positions_of_shahrazad. Do the same thing for the name Ali. Store the result in positions_of_ali. Finally, find all occurences of Egypt and store the indexes in positions_of_egypt. Tip: (1) remember that we lowercased the entire corpus! (2) remember that indexes start at 0."""
+
+def positions_of(word):
+    #insert your code here
+
+positions_of_shahrazad = positions_of("shahrazad")
+positions_of_ali = positions_of("ali")
+positions_of_egypt = positions_of("egypt")
+"""If everything went well, the following lines of code should produce a nice dispersion plot of all sentence occurences of Shahrazad, Ali and Egypt in the corpus."""
+
+plt.figure(figsize=(20, 8))
+names = ["Shahrazad", "Ali", "Egypt"]
+plt.plot(positions_of_shahrazad, [1]*len(positions_of_shahrazad), "|", markersize=100)
+plt.plot(positions_of_ali, [2]*len(positions_of_ali), "|", markersize=100)
+plt.plot(positions_of_egypt, [0]*len(positions_of_egypt), "|", markersize=100)
+plt.yticks(range(len(names)), names)
+_ = plt.ylim(-1, 3)
+
